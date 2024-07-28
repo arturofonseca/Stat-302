@@ -1,0 +1,36 @@
+---
+title: "ggplot2: Elegant Graphics for Data Analysis Notes"
+format:
+  html:
+    toc: true
+    embed-resources: true
+    code-fold: false
+    link-external-newwindow: true
+editor: visual
+---
+
+## 1: Introduction
+
+> ggplot2 is designed to work iteratively
+>
+> the grammar tells us that a graphic maps the data to the aesthetic attributes (colour, shape, size) of geometric objects (points, lines, bars)
+
+## 2: First steps
+
+```{r}
+library(ggplot2)
+mpg
+```
+
+> Every ggplot2 plot has three key components:
+>
+> 1.  **data**,
+>
+> 2.  A set of **aesthetic mappings** between variables in the data and visual properties, and
+>
+> 3.  At least one layer which describes how to render each observation. Layers are usually created with a **geom** function.
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point()
+```
