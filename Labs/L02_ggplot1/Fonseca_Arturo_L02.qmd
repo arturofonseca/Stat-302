@@ -15,14 +15,6 @@ execute:
 from: markdown+emoji 
 ---
 
-::: callout-note
-**Make this document your own!** Meaning you should play with the layout and think about removing and adding items like sections (for example you should remove this callout block). Explore quarto markdown to add features like code-folding to your document.
-:::
-
-::: callout-warning
-This is a template file and may not contain everything seen in the instructions html (`L02_ggplot1.html`). For example, images or graphs are not usually included in the template. **Rely on the instructions html file for directions, not the template file.**
-:::
-
 ## Goals
 
 1.  use additional color, shape, size, transparency aesthetics
