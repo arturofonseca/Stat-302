@@ -36,9 +36,12 @@ We'll be using the `US_income.rda` dataset which should be placed in the `/data`
 #| label: load-packages
 
 # Load package(s)
+library(tidyverse)
+library(tigris)
+library(sf)
 
 # Load dataset(s)
-
+load("US_income.rda")
 ```
 
 ## Exercise 1
@@ -57,8 +60,15 @@ Optional: Consider adding major cities (or your home town).
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+il_counties <- map_data("county", "texas") %>% 
+  select(lon = long, lat, group, id = subregion)
 
+ggplot(il_counties, aes(lon, lat, group = group)) +
+  geom_polygon(color = "grey50", alpha = 0) +
+  coord_quickmap() +
+  theme_void()
+```
 :::
 
 ### Plot 2
@@ -68,8 +78,17 @@ Now use `geom_sf()` instead. You'll need to download data for this. You can use 
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+#| results: hide
+tx_data <- counties(state = "TX", cb = T)
+```
 
+```{r}
+ggplot(tx_data) +
+  geom_sf(alpha = 0) +
+  coord_sf() +
+  theme_void()
+```
 :::
 
 ## Exercise 2
@@ -78,7 +97,6 @@ Using the `US_income` dataset, recreate the following graphics as precisely as p
 
 ```{r}
 #| label: ex-2-data-wrangle
-#| eval: false
 
 # Setting income levels
 US_income <- mutate(
@@ -104,8 +122,13 @@ US_income <- mutate(
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
-
+```{r}
+ggplot(US_income) +
+  geom_sf(aes(fill = income_bins), color = "grey80", size = 0.2) +
+  viridis::scale_fill_viridis(discrete = T) +
+  theme_void() +
+  labs(fill = "Median income")
+```
 :::
 
 ### Plot 2
@@ -119,8 +142,15 @@ YOUR SOLUTION HERE
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
-
+```{r}
+US_income
+ggplot(US_income) +
+  statebins::geom_statebins(aes(state = name, fill = income_bins)) +
+  viridis::scale_fill_viridis(discrete = T) +
+  theme_void() +
+  theme(legend.position = "bottom") +
+  labs(fill = "Median income")
+```
 :::
 
 ## Exercise 3
@@ -130,8 +160,17 @@ Pick any city or foreign country to build a map for. You can dress it up or make
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+il_data <- counties(state = "IL", cb = T)
 
+il_data |>
+  mutate(is_cook = factor(NAME == "Cook", levels = c("TRUE", "FALSE"))) |>
+  ggplot() +
+  geom_sf(aes(fill = is_cook), color = "black", alpha = 0.5) +
+  theme_void() +
+  labs(fill = "Cook County?") +
+  scale_fill_manual(values = list("TRUE" = "blue", "FALSE" = "red"))
+```
 :::
 
 ## Challenge(s)
