@@ -15,22 +15,22 @@ execute:
 from: markdown+emoji 
 ---
 
-::: {.callout-note}
+::: callout-note
 **Make this document your own!** Meaning you should play with the layout and think about removing and adding items like sections (for example you should remove this callout block). Explore quarto markdown to add features like code-folding to your document.
 :::
 
-::: {.callout-warning}
+::: callout-warning
 This is a template file and may not contain everything seen in the instructions html (`L02_ggplot1.html`). For example, images or graphs are not usually included in the template. **Rely on the instructions html file for directions, not the template file.**
 :::
 
 ## Goals
 
-1. use additional color, shape, size, transparency aesthetics
-2. recognize a variety of different geom layers
-3. set x and y limits
-4. read documentation and access help files
-5. read in .rda and .txt files
-6. use proper organization 
+1.  use additional color, shape, size, transparency aesthetics
+2.  recognize a variety of different geom layers
+3.  set x and y limits
+4.  read documentation and access help files
+5.  read in .rda and .txt files
+6.  use proper organization
 
 ::: callout-tip
 ## Organization is important!
@@ -44,37 +44,35 @@ This is a template file and may not contain everything seen in the instructions 
 
 For this activity we will be using the `blue_jays`, `BA_degrees`, `dow_jones_industrial` and `cdc` data set that should be located in your `/data` subdirectory. An explanation of the variables in the data set are provided below in their respective Exercises.
 
-
 ```{r}
 #| label: load-packages
 #| results: hide
 
 # Load package(s)
 library(tidyverse)
+library(splines)
 
 # Load data
 rda_files <- list.files("data/", pattern = "\\.rda", full.names = T)
 lapply(rda_files, load, envir = .GlobalEnv)
+cdc <- read_delim("data/cdc.txt")
 ```
-
 
 ## Exercise 1
 
-We'll be using data from the `blue_jays.rda` dataset to answer the following questions and construct the following plots. 
+We'll be using data from the `blue_jays.rda` dataset to answer the following questions and construct the following plots.
 
 Below is a description of the variables contained in the dataset.
 
-* `BirdID` - ID tag for bird
-* `KnownSex` - Sex coded as F or M
-* `BillDepth` - Thickness of the bill measured at the nostril (in mm)
-* `BillWidth` - Width of the bill (in mm)
-* `BillLength` - Length of the bill (in mm)
-* `Head` - Distance from tip of bill to back of head (in mm)
-* `Mass` - Body mass (in grams)
-* `Skull` - Distance from base of bill to back of skull (in mm)
-* `Sex` - Sex coded as `0 = female` or `1 = male`
-
-<br>
+-   `BirdID` - ID tag for bird
+-   `KnownSex` - Sex coded as F or M
+-   `BillDepth` - Thickness of the bill measured at the nostril (in mm)
+-   `BillWidth` - Width of the bill (in mm)
+-   `BillLength` - Length of the bill (in mm)
+-   `Head` - Distance from tip of bill to back of head (in mm)
+-   `Mass` - Body mass (in grams)
+-   `Skull` - Distance from base of bill to back of skull (in mm)
+-   `Sex` - Sex coded as `0 = female` or `1 = male`
 
 ### Question 1.1
 
@@ -82,57 +80,65 @@ Three commonly used aesthetics for enhancing a graphic are color, size, and shap
 
 In the `blue_jays` dataset which variables would be appropriate to map to the `size` aesthetic? The `shape` aesthetic? The `color` aesthetic?
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+It would be appropriate to map the `size` aesthetic to `Mass` (or any of the other continuous variables). The `color` and `shape` aesthetic should both be mapped together so that we can be inclusive and so that not too much is going on. This is better mapped to a discrete/categorical variable such as `Sex` or `KnownSex`.
 :::
 
 ### Plot 1
 
 Construct a scatterplots of `Head` by `Mass` with the following criteria:
 
-- `color` aesthetic set to Northwestern purple (`#4E2A84`)
-- `shape` aesthetic set a solid/filled triangle
-- `size` aesthetic set to 2.
+-   `color` aesthetic set to Northwestern purple (`#4E2A84`)
+-   `shape` aesthetic set a solid/filled triangle
+-   `size` aesthetic set to 2.
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ggplot(blue_jays, aes(Mass, Head)) +
+  geom_point(color = "#4E2A84",
+             shape = "triangle",
+             size = 2)
+```
 :::
 
 ### Plot 2
 
 Construct a scatterplot of `Head` by `Mass` with the following criteria:
 
-- `size` aesthetic to 2.
-- Either `Sex` or `KnownSex` mapped to the `color` aesthetic.
+-   `size` aesthetic to 2.
+-   Either `Sex` or `KnownSex` mapped to the `color` aesthetic.
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ggplot(blue_jays, aes(Mass, Head, color = KnownSex)) +
+  geom_point(size = 2)
+```
 :::
 
 ### Question 1.2
 
 Was it more appropriate to map `Sex` or `KnownSex` to the `color` aesthetic in Plot 2 and why?
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+It was more appropriate to use `KnownSex` since R treats it as an actual categorical variable as opposed to `Sex` which treats it as a number scale.
 :::
 
 ### Question 1.3
 
-Consider the `color` aesthetic in Plot 1 and Plot 2 above. **Explain why** these two usages of the `color` aesthetic are meaningfully different. 
+Consider the `color` aesthetic in Plot 1 and Plot 2 above. **Explain why** these two usages of the `color` aesthetic are meaningfully different.
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+In the first case, the most appriate color was used to seperate each data point from the background and create a pleasing graph. In the second plot, color was used to tell a story by differentiating the sizes of each sex.
 :::
 
 ## Exercise 2
@@ -141,12 +147,11 @@ We'll be using data from the `BA_degrees.rda` which is already in the `/data` su
 
 `BA_degrees.rda`
 
-* `field` - field of study
-* `year_str` - academic year (e.g. 1970-71)
-* `year` - closing year of academic year
-* `count` - number of degrees conferred within a field for the year
-* `perc` - field's percentage of degrees conferred for the year
-
+-   `field` - field of study
+-   `year_str` - academic year (e.g. 1970-71)
+-   `year` - closing year of academic year
+-   `count` - number of degrees conferred within a field for the year
+-   `perc` - field's percentage of degrees conferred for the year
 
 ```{r}
 #| label: ex-2-data-wrangle
@@ -170,31 +175,60 @@ Using the `ba_data` dataset derived from `BA_degrees`, recreate the following gr
 
 ### Plot 1
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ba_data_sorted <- ba_data |>
+  mutate(field = factor(
+    field,
+    # Let's order it the exact same
+    levels = c(
+      "Business",
+      "Social sciences and history",
+      "Education",
+      "Health professions and related programs",
+      "Psychology",
+      "Engineering"
+    )
+  ))
+
+ggplot(ba_data_sorted, aes(year, perc)) +
+  facet_wrap( ~ field) +
+  geom_line() +
+  labs(x = "Year", y = "Proportion of degrees")
+```
 :::
 
 ### Plot 2
 
 *Hints:*
 
-- Transparency is 0.5
-- Color used is`"red"`
+-   Transparency is 0.5
+-   Color used is`"red"`
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ggplot(ba_data_sorted, aes(year, perc)) +
+  facet_wrap( ~ field) +
+  geom_area(fill = "red", alpha = 0.5) +
+  geom_line(color = "red") +
+  labs(x = "Year", y = "Proportion of degrees")
+```
 :::
 
 ### Plot 3
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ggplot(ba_data_sorted, aes(year, perc)) +
+  geom_line(aes(color = field)) +
+  labs(x = "Year", y = "Proportion of degrees")
+```
 :::
 
 ## Exercise 3
@@ -211,10 +245,10 @@ djia_date_range <- dow_jones_industrial %>%
     )
 ```
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+Not sure what I'm supposed to put here...
 :::
 
 ### Plot 1
@@ -223,18 +257,23 @@ It will be easier to see the trend if we add a smooth fit line to the graph.
 
 *Hints:*
 
-- colors: "purple", "red", "green"
-- Wiggliness for `loess` is 0.3
+-   colors: "purple", "red", "green"
+-   Wiggliness for `loess` is 0.3
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ggplot(djia_date_range, aes(date, close)) +
+  geom_smooth(span = 0.3, color = "green", fill = "red") +
+  geom_line(color = "purple") +
+  labs(x = "", y = "Dow Jones Industrial Average")
+```
 :::
 
 ### Plot 2
 
-There are many different smoothing methods in statistics. By default `geom_smooth()` uses `loess`. 
+There are many different smoothing methods in statistics. By default `geom_smooth()` uses `loess`.
 
 Another extremely popular smoothing method in statistics is the use of splines. A spline function is a curve constructed from polynomial segments that are subject to conditions or continuity at their joints. Generally, a difficulty is you need to determine the number of `knots`, however this method is popular in predictive models.
 
@@ -242,33 +281,38 @@ Add a natural cubic spline smoother with `df = 6`.
 
 *Hints:*
 
-- need the `splines` package
-- use method `"lm"` 
-- `y ~ ns(x, 6)`
+-   need the `splines` package
+-   use method `"lm"`
+-   `y ~ ns(x, 6)`
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ggplot(djia_date_range, aes(date, close)) +
+  geom_smooth(method = "lm", formula = y ~ ns(x, df = 6), color = "blue", se = F) +
+  geom_line() +
+  labs(x = "", y = "Dow Jones Industrial Average")
+```
 :::
 
 ## Exercise 4
 
 We'll be using the BRFSS (Behavioral Risk Factor Surveillance System) survey collected annually by the Centers for Disease Control and Prevention (CDC). The data can be found in the provided `cdc.txt` file --- place this file in your `/data` subdirectory. The dataset contains 20,000 complete observations/records of 9 variables/fields, described below.
 
-* `genhlth` - How would you rate your general health? (excellent, very good, good, fair, poor)
-* `exerany` - Have you exercised in the past month? (`1 = yes`, `0 = no`) 
-* `hlthplan` - Do you have some form of health coverage? (`1 = yes`, `0 = no`) 
-* `smoke100` - Have you smoked at least 100 cigarettes in your life time? (`1 = yes`, `0 = no`) 
-* `height` -  height in inches
-* `weight` - weight in pounds
-* `wtdesire` - weight desired in pounds
-* `age` - in years
-* `gender` - `m` for males and `f` for females
+-   `genhlth` - How would you rate your general health? (excellent, very good, good, fair, poor)
+-   `exerany` - Have you exercised in the past month? (`1 = yes`, `0 = no`)
+-   `hlthplan` - Do you have some form of health coverage? (`1 = yes`, `0 = no`)
+-   `smoke100` - Have you smoked at least 100 cigarettes in your life time? (`1 = yes`, `0 = no`)
+-   `height` - height in inches
+-   `weight` - weight in pounds
+-   `wtdesire` - weight desired in pounds
+-   `age` - in years
+-   `gender` - `m` for males and `f` for females
 
 <br>
 
-Using the `cdc` dataset, we want to visualize the **distribution** between weight and gender based on general health. Recreate the Plot 1 and Plot 2 which represent 2 attempts at this. 
+Using the `cdc` dataset, we want to visualize the **distribution** between weight and gender based on general health. Recreate the Plot 1 and Plot 2 which represent 2 attempts at this.
 
 <br>
 
@@ -276,59 +320,89 @@ Using the `cdc` dataset, we want to visualize the **distribution** between weigh
 
 *Hints:*
 
-- Transparency is 0.2
-- Horizontal axis should have lower limit of 50 and upper limit of 400
+-   Transparency is 0.2
+-   Horizontal axis should have lower limit of 50 and upper limit of 400
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+cdc_sorted <- cdc |>
+  mutate(genhlth = factor(
+    genhlth,
+    levels = c("excellent", "very good", "good", "fair", "poor")
+  ))
+
+ggplot(cdc_sorted, aes(weight)) +
+  facet_wrap(~ gender) +
+  geom_density(aes(color = genhlth, fill = genhlth), alpha = 0.2)
+```
 :::
 
 ### Plot 2
 
 *Hints:*
 
-- Transparency is 0.4
+-   Transparency is 0.4
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ggplot(cdc_sorted, aes(gender, weight, fill = gender)) +
+  facet_grid(~ genhlth) +
+  geom_boxplot(alpha = 0.4)
+```
 :::
 
 ### Plot 3
 
-Choose one more way to visualize the **distribution** of weight based on gender and general health. (Many ways to do this). 
+Choose one more way to visualize the **distribution** of weight based on gender and general health. (Many ways to do this).
 
 *Requirements:*
 
-- The geom layer cannot be geom_boxplot() or geom_density()
-- Appropriately label the x- and y- axis
-- Add a title
+-   The geom layer cannot be geom_boxplot() or geom_density()
+-   Appropriately label the x- and y- axis
+-   Add a title
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ggplot(cdc_sorted, aes(weight)) +
+  facet_wrap(~ genhlth, scales = "free_y") +
+  geom_histogram(aes(color = gender, fill = gender), binwidth = 10, alpha = 0.5) +
+  labs(x = "Weight", y = "Count", title = "Distribution of weight by health")
+```
 :::
 
 ### Question 4.1
 
 Compare and contrast the different ways to visualize a distribution. In other words, when might you use a histogram vs density vs boxplot? Which did you find the most useful in interpreting the plots above?
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+A density plot is very useful if you just want to see where the majority of your data is. We can easily see that there is a high density of people who weigh between 100 and 200 pounds. The boxplot was the most useful to me because it is very relative. You can see how each category varies from another. Here we clearly see that males weigh more on average and that there isn't a significant difference in the distribution of weights between health types. The histogram is really the same as the density plot, except you have the option to discretize your variable into bins. For example, we might find it useful to see how many people are in the 150-200 pound range (`binwidth = 50`).
 :::
 
 ## Exercise 5
 
 Using the `cdc` dataset, construct this plot in **two** ways. Once using `geom_bar()` and once using the `geom_col()`. May need to do some data wrangling for one of these.
 
-::: {.callout-tip icon=false}
+::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR ANSWER
+```{r}
+ggplot(cdc_sorted, aes(genhlth)) +
+  geom_bar() +
+  labs(x = "General Health", y = "Count")
+
+cdc_sorted |>
+  group_by(genhlth) |>
+  summarize(count = n()) |>
+  ggplot(aes(genhlth, count)) +
+  geom_col() +
+  labs(x = "General Health", y = "Count")
+```
 :::
