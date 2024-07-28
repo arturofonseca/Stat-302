@@ -55,3 +55,4 @@
 # Editor files
 *.idea/
 *.vscode/
+.Rproj.user

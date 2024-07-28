@@ -47,12 +47,14 @@ For this activity we will be using the `blue_jays`, `BA_degrees`, `dow_jones_ind
 
 ```{r}
 #| label: load-packages
+#| results: hide
 
 # Load package(s)
 library(tidyverse)
 
 # Load data
-
+rda_files <- list.files("data/", pattern = "\\.rda", full.names = T)
+lapply(rda_files, load, envir = .GlobalEnv)
 ```
 
 
