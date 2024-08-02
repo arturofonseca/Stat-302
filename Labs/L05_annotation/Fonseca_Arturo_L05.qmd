@@ -1,0 +1,208 @@
+---
+title: "L05 Annotation & Positioning"
+subtitle: "Data Visualization (STAT 302)" 
+author: "Arturo Fonseca"
+pagetitle: "L05 Arturo Fonseca"
+
+format:
+  html:
+    toc: true
+    toc-location: left
+    embed-resources: true
+    code-fold: show
+    link-external-newwindow: true
+    fig-dpi: 300
+
+execute:
+  warning: false
+
+from: markdown+emoji 
+reference-location: margin
+citation-location: margin 
+---
+
+
+## Overview
+
+The goal of this lab is to explore methods for annotating and positioning with `ggplot2` plots. This lab also utilizes `scale_*` to a greater degree which is part of our next reading. In fact, students may find going through/reading chapter [11 Colour scales and legends](https://ggplot2-book.org/scale-colour.html) useful.
+
+## Datasets
+
+We'll be using the `blue_jays.rda`, `titanic.rda`, `Aus_athletes.rda`, and `tech_stocks.rda` datasets.
+
+```{r}
+#| label: load-pkgs-data
+
+# Load package(s)
+
+# Load data
+
+```
+
+## Exercises
+
+Complete the following exercises.
+
+## Exercise 1
+
+Using the `blue_jays.rda` dataset, recreate the following graphic as precisely as possible.
+
+*Hints:*
+
+- Transparency is 0.8
+- Point size 2
+- Create a `label_info` dataset that is a subset of original data, just with the 2 birds to be labeled
+- Shift label text horizontally by 0.5
+- See ggplot2 textbook 8.3 building custom annotations 
+- Annotation size is 4
+- Classic theme
+
+::: {.callout-tip icon="false"}
+## Solution
+
+YOUR SOLUTION HERE
+
+:::
+
+## Exercise 2
+
+Using the `tech_stocks` dataset, recreate the following graphics as precisely as possible. Use the column `price_indexed`.
+
+### Plot 1
+
+*Hints:*
+
+- Create a `label_info` dataset that is a subset of original data, just containing the last day's information for each of the 4 stocks
+- serif font
+- Annotation size is 4
+
+::: {.callout-tip icon="false"}
+## Solution
+
+YOUR SOLUTION HERE
+
+:::
+
+### Plot 2
+
+*Hints:*
+
+- Package `ggrepel`
+  - `box.padding` is 0.6
+  - Minimum segment length is 0 
+  - Horizontal justification is to the right
+  - seed of 9876
+- Annotation size is 4
+- serif font
+
+::: {.callout-tip icon="false"}
+## Solution
+
+YOUR SOLUTION HERE
+
+:::
+
+## Exercise 3
+
+Using the `titanic.rda` dataset, recreate the following graphic as precisely as possible.
+
+*Hints:*
+
+- Create a new variable that uses `died` and `survived` as levels/categories
+- Hex colors: `#D55E00D0`, `#0072B2D0` (no alpha is being used)
+
+::: {.callout-tip icon="false"}
+## Solution
+
+YOUR SOLUTION HERE
+
+:::
+
+## Exercise 4
+
+Use the `athletes_dat` dataset --- extracted from `Aus_althetes.rda` --- to recreate the following graphic as precisely as possible. **Create the graphic twice**: once using `patchwork` and once using `cowplot`.
+
+```{r}
+#| label: ex-4-data-wrangle
+#| eval: false 
+
+# Get list of sports played by BOTH sexes
+both_sports <- Aus_athletes |>
+  # dataset of columns sex and sport 
+  # only unique observations
+  distinct(sex, sport) |>
+  # see if sport is played by one gender or both
+  count(sport) |>
+  # only want sports played by BOTH sexes
+  filter(n == 2) |>
+  # get list of sports
+  pull(sport)
+
+# Process data
+athletes_dat <- Aus_athletes |>
+  # only keep sports played by BOTH sexes
+  filter(sport %in% both_sports) |>
+  # rename track (400m) and track (sprint) to be track
+  # case_when will be very useful with shiny apps
+  mutate(
+    sport = case_when(
+      sport == "track (400m)" ~ "track",
+      sport == "track (sprint)" ~ "track",
+      TRUE ~ sport
+      )
+    )
+```
+
+*Hints:*
+
+- Build each plot separately
+- Bar plot: lower limit 0, upper limit 95
+- Bar plot: shift bar labels by 5 units and top justify 
+- Bar plot: label size is 5
+- Bar plot: `#D55E00D0` & `#0072B2D0` --- no `alpha`
+- Scatterplot: `#D55E00D0` & `#0072B2D0` --- no `alpha`
+- Scatterplot: filled circle with "white" outline; size is 3
+- Scatterplot: `rcc` is red blood cell count; `wcc` is white blood cell count
+- Boxplot: outline `#D55E00` and `#0072B2`; shading `#D55E0040` and `#0072B240`
+- Boxplot: should be made narrower; 0.5
+- Boxplot: Legend is in top-right corner of bottom plot
+- Boxplot: Space out labels `c("female    ", "male")`
+- Boxplot: Legend shading matches hex values for top two plots
+
+### Using `patchwork`
+
+::: {.callout-tip icon="false"}
+## Solution
+
+YOUR SOLUTION HERE
+
+:::
+
+### Using `cowplot`
+
+Use [`cowplot::plot_grid()`](https://wilkelab.org/cowplot/articles/plot_grid.html) to combine them.
+
+::: {.callout-tip icon="false"}
+## Solution
+
+YOUR SOLUTION HERE
+
+:::
+
+## Exercise 5
+
+Create the following graphic using `patchwork`.
+
+*Hints:*
+
+- Use plots created in Exercise 4
+- inset theme is classic
+  - Useful values: 0, 0.45, 0.75, 1
+- plot annotation `"A"`
+
+::: {.callout-tip icon="false"}
+## Solution
+
+YOUR SOLUTION HERE
+
+:::
