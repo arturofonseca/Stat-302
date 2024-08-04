@@ -34,9 +34,15 @@ We'll be using the `blue_jays.rda`, `titanic.rda`, `Aus_athletes.rda`, and `tech
 #| label: load-pkgs-data
 
 # Load package(s)
+library(tidyverse)
+library(ggrepel)
+library(patchwork)
 
 # Load data
-
+load("data/blue_jays.rda")
+load("data/tech_stocks.rda")
+load("data/titanic.rda")
+load("data/Aus_athletes.rda")
 ```
 
 ## Exercises
@@ -60,7 +66,31 @@ Using the `blue_jays.rda` dataset, recreate the following graphic as precisely a
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+ggplot(blue_jays, aes(Mass, Head, color = KnownSex)) +
+  geom_point(alpha = 0.8, size = 2, show.legend = F) +
+  annotate(
+    "text",
+    x = min(blue_jays$Mass) + 0.5,
+    y = max(blue_jays$Head),
+    label = "Head length versus body mass for 123 blue jays",
+    hjust = 0,
+    vjust = 1,
+    size = 4
+  ) +
+  geom_text(
+    aes(Mass, Head, label = caption),
+    data = blue_jays |>
+      slice_max(Head, n = 2, by = KnownSex) |>
+      slice_min(Mass, n = 1, by = KnownSex) |>
+      mutate(caption = KnownSex),
+    nudge_x = 0.5,
+    size = 4
+  ) +
+  labs(x = "Body mass (g)", y = "Head length (mm)") +
+  theme_classic() +
+  theme(legend.position = "none")
+```
 
 :::
 
@@ -79,7 +109,24 @@ Using the `tech_stocks` dataset, recreate the following graphics as precisely as
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+label_info <- filter(tech_stocks, date == max(date), .by = company)
+ggplot(tech_stocks, aes(date, price_indexed, group = company)) +
+  geom_line(aes(color = company), show.legend = F) +
+  geom_text(aes(date, price_indexed, label = company), data = label_info) +
+  annotate(
+    "text",
+    min(tech_stocks$date),
+    Inf,
+    label = "Stock price over time for four major companies",
+    family = "serif",
+    hjust = 0,
+    vjust = 1,
+    size = 4
+  ) +
+  labs(x = NULL, y = "Stock price, indexed") +
+  theme_minimal()
+```
 
 :::
 
@@ -98,7 +145,29 @@ YOUR SOLUTION HERE
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+set.seed(9876)
+ggplot(tech_stocks, aes(date, price_indexed, group = company)) +
+  geom_line(aes(color = company), show.legend = F) +
+  ggrepel::geom_text_repel(
+    aes(date, price_indexed, label = company),
+    data = label_info,
+    box.padding = 0.6,
+    hjust = "right"
+  ) +
+  annotate(
+    "text",
+    min(tech_stocks$date),
+    Inf,
+    label = "Stock price over time for four major companies",
+    family = "serif",
+    hjust = 0,
+    vjust = 1,
+    size = 4
+  ) +
+  labs(x = NULL, y = "Stock price, indexed") +
+  theme_minimal()
+```
 
 :::
 
@@ -114,7 +183,16 @@ Using the `titanic.rda` dataset, recreate the following graphic as precisely as 
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+titanic |>
+  mutate(survived = factor(survived, levels = c("0", "1"), labels = c("died", "survived"))) |>
+  ggplot(aes(sex, fill = sex)) + 
+  geom_bar(show.legend = F) +
+  facet_grid(rows = vars(survived), cols = vars(class)) +
+  scale_fill_manual(values = c("#D55E00", "#0072B2")) +
+  theme_minimal() +
+  labs(x = NULL)
+```
 
 :::
 
@@ -124,7 +202,6 @@ Use the `athletes_dat` dataset --- extracted from `Aus_althetes.rda` --- to recr
 
 ```{r}
 #| label: ex-4-data-wrangle
-#| eval: false 
 
 # Get list of sports played by BOTH sexes
 both_sports <- Aus_athletes |>
@@ -174,7 +251,56 @@ athletes_dat <- Aus_athletes |>
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+p1 <- ggplot(athletes_dat, aes(sex, fill = sex)) +
+  geom_bar(show.legend = F) +
+  geom_text(
+    stat = "count",
+    aes(label = ..count..),
+    vjust = 1,
+    size = 5,
+    nudge_y = -5
+  ) +
+  scale_x_discrete(labels = c("f" = "female", "m" = "male")) +
+  scale_y_continuous(limits = c(0, 95)) +
+  scale_fill_manual(values = c("#D55E00D0", "#0072B2D0")) +
+  theme_minimal() +
+  labs(x = NULL, y = "number")
+
+p2 <- ggplot(athletes_dat, aes(rcc, wcc, fill = sex)) +
+  geom_point(
+    show.legend = F,
+    shape = 21,
+    size = 3,
+    color = "white"
+  ) +
+  scale_fill_manual(values = c("#D55E00D0", "#0072B2D0")) +
+  theme_minimal() +
+  labs(x = "RBC count", y = "WBC count")
+
+p3 <- ggplot(athletes_dat, aes(
+  x = sport,
+  y = pcBfat,
+  color = sex,
+  fill = sex
+)) +
+  geom_boxplot(width = 0.5) +
+  theme_minimal() +
+  scale_color_manual(values = c("#D55E00", "#0072B2"),
+                     labels = c("female", "male")) +
+  scale_fill_manual(values = c("#D55E0040", "#0072B240")) +
+  labs(x = "Sport", y = "Percent Body Fat", color = NULL) +
+  guides(color = guide_legend(override.aes = list(
+    color = NA, fill = c("#D55E00D0", "#0072B2D0")
+  )), fill = "none") +
+  theme(
+    legend.direction = "horizontal",
+    legend.position = c(1, 1),
+    legend.justification = c(1, 1)
+  )
+
+(p1 | p2) / p3
+```
 
 :::
 
