@@ -311,7 +311,9 @@ Use [`cowplot::plot_grid()`](https://wilkelab.org/cowplot/articles/plot_grid.htm
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+cowplot::plot_grid(cowplot::plot_grid(p1, p2), p3, ncol = 1)
+```
 
 :::
 
@@ -329,6 +331,14 @@ Create the following graphic using `patchwork`.
 ::: {.callout-tip icon="false"}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+p2 + inset_element(
+  p1 + theme_classic(),
+  left = 0.75,
+  bottom = 0,
+  right = 1,
+  top = 0.45
+) + plot_annotation(tag_levels = "A")
+```
 
 :::
