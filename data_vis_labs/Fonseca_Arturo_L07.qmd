@@ -37,9 +37,12 @@ We will also be using the `mpg` dataset which comes packaged with `ggplot2` --- 
 #| label: load-pkgs-data
 
 # load package(s)
+library(tidyverse)
+library(patchwork)
 
 # load datasets
-
+load("data/tech_stocks.rda")
+nu_data <- read_csv("data/NU_admission_data.csv")
 ```
 
 ## Exercise 1
@@ -55,7 +58,6 @@ Using `mpg` and the `class_dat` dataset created below, recreate the following gr
 
 ```{r}
 #| label: ex-1
-#| eval: false
 
 # additional dataset for plot
 class_dat <- mpg |>
@@ -70,8 +72,23 @@ class_dat <- mpg |>
 ### Plot 1 -- using `mean_hwy`
 
 ::: {.callout-tip icon=false}
-
 ## Solution
+
+```{r}
+ggplot(mpg, aes(class, hwy)) +
+  geom_point() +
+  geom_jitter(width = 0.1, height = NULL) +
+  geom_text(aes(y = 0, label = label), data = class_dat) +
+  geom_point(
+    aes(y = mean_hwy),
+    data = class_dat,
+    color = "red",
+    alpha = 0.6,
+    size = 5
+  ) +
+  labs(x = "Highway miles per gallon", y = "Vehicle class") +
+  theme_minimal()
+```
 
 :::
 
@@ -80,7 +97,28 @@ class_dat <- mpg |>
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+ggplot(mpg, aes(class, hwy)) +
+  geom_point() +
+  geom_jitter(width = 0.1, height = NULL) +
+  scale_y_continuous(limits = c(0, NA)) +
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    color = "red",
+    alpha = 0.6,
+    size = 5
+  ) +
+  stat_count(
+    aes(label = paste("n = ", ..count..)),
+    geom = "text",
+    y = 0,
+    vjust = 0.5,
+    position = "identity"
+  ) +
+  labs(x = "Highway miles per gallon", y = "Vehicle class") +
+  theme_minimal()
+```
 
 :::
 
@@ -96,7 +134,6 @@ Using the `perc_increase` dataset derived from the `tech_stocks` dataset, recrea
 
 ```{r}
 #| label: ex-2
-#| eval: false
 
 # percentage increase data
 perc_increase <- tech_stocks |>
@@ -112,7 +149,20 @@ perc_increase <- tech_stocks |>
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+ggplot(perc_increase, aes(company, perc)) +
+  geom_bar(stat = "identity", fill = "#56B4E9") +
+  geom_text(
+    aes(label = label),
+    hjust = 1.1,
+    size = 5,
+    color = "white"
+  ) +
+  coord_flip() +
+  scale_y_continuous(expand = expansion(0)) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal()
+```
 
 :::
 
@@ -133,7 +183,7 @@ There is one major error they make with the bars in their graphic. **Explain wha
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR SOLUTION HERE
+Looks like they are double counting. They is no reason why they should be stacked like that, unless the green was non-admitted. Each admitted student is also an applicant, and thus also apart of the green bar, but here they are counting it as two different things. The y-axis is labelled applicants, but that's not the case, since it could mark 40K applicants when there were truly only 30K (looking at green bar).
 
 :::
 
@@ -144,7 +194,91 @@ Which approach do you find communicates the information better, the single dual 
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR SOLUTION HERE
+I personally like the dual-axis approach. The data is very related, so it makes sense to plot them together and see how one changes as the other does very directly. There isn't too much going on in the plot, so I like that approach.
+
+```{r}
+nu_tidy <- nu_data |>
+  filter(Year >= 2002, Year <= 2022) |>
+  select(!ends_with("Rate")) |>
+  pivot_longer(-Year, names_to = "Type", values_to = "Count")
+
+p1 <- ggplot(nu_tidy, aes(Year, Count, fill = Type)) +
+  geom_col(position = "identity", width = 0.6) +
+  scale_x_continuous(
+    name = "Entering Year",
+    breaks = scales::breaks_width(1),
+    expand = expansion(add = 0.25)
+  ) +
+  scale_y_continuous(labels = scales::label_comma(), expand = expansion(0)) +
+  scale_fill_manual(
+    name = NULL,
+    limits = c("Matriculants", "Admitted students", "Applications"),
+    values = c("#4E2A84", "#836EAA", "#B6ACD1")
+  ) +
+  geom_text(
+    aes(label = scales::comma(Count)),
+    vjust = 1,
+    nudge_y = -500,
+    color = "white",
+    size = 2
+  ) +
+  # labs(title = "Northwestern University", subtitle = "Undergraduate Admissions 2001 - 2021") +
+  theme_classic() +
+  theme(
+    legend.direction = "horizontal",
+    legend.position = c(0.5, 1),
+    legend.justification = c(0.5, 1),
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
+p1
+```
+
+```{r}
+nu_tidy_perc <- nu_data |>
+  filter(Year >= 2002, Year <= 2022) |>
+  select(Year, ends_with("Rate")) |>
+  pivot_longer(-Year, names_to = "Type", values_to = "Count") |>
+  mutate(Count = Count / 100)
+
+p2 <- ggplot(nu_tidy_perc,
+             aes(
+               Year,
+               Count,
+               group = Type,
+               color = Type,
+               shape = Type
+             ))+
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(
+    name = "Entering Year",
+    breaks = scales::breaks_width(1),
+    expand = expansion(add = 0.25)
+  ) +
+  scale_y_continuous(name = "Rate", labels = scales::label_percent()) +
+  scale_color_manual(name = NULL, values = c("maroon", "skyblue")) +
+  guides(shape = "none") +
+  geom_text(
+    aes(label = scales::percent(round(Count, 2))),
+    vjust = 0,
+    nudge_y = 0.01,
+    color = "black",
+    size = 2
+  ) +
+  # labs(title = "Northwestern University", subtitle = "Undergraduate Admissions 2001 - 2021") +
+  theme_classic() +
+  theme(
+    legend.direction = "horizontal",
+    legend.position = c(0.5, 1),
+    legend.justification = c(0.5, 1),
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
+p2
+```
 
 :::
 
@@ -160,6 +294,17 @@ YOUR SOLUTION HERE
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR SOLUTION HERE
+```{r}
+p2 / p1 +
+  plot_layout(axis_titles = "collect_x", axes = "collect_x") +
+  plot_annotation(
+    title = "Northwestern University",
+    subtitle = "Undergraduate Admissions 2001 - 2021",
+    theme = theme(
+      plot.title = element_text(hjust = 0.5),
+      plot.subtitle = element_text(hjust = 0.5)
+    )
+  )
+```
 
 :::

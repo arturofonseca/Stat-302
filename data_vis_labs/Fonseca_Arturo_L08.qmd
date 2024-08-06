@@ -35,9 +35,10 @@ We'll be using the `mod_nba_adv_stats_2023_24.txt` dataset --- add to your proje
 #| label: load-pkgs-data
 
 # load package(s)
+library(tidyverse)
 
 # load data
-
+nba_dat <- read_delim("data/mod_nba_adv_stats_2023_24.txt")
 ```
 
 ## Exercise 
@@ -60,7 +61,6 @@ When data wrangling we will need a helper function for creating the quartiles fo
 
 ```{r}
 #| label: helper-function
-#| eval: false
 
 # Returns quartile rank
 quartile_rank <- function(x = 0:99) {
@@ -87,13 +87,12 @@ quartile_rank <- function(x = 0:99) {
 
 ```{r}
 #| label: data-wrangling
-#| eval: false
 
 # Graphical data
 nba_graph_dat <- nba_dat |> 
-  # ADD COMMENT !!!!
+  # Exclude players that played less than 10 games or played less than 5 minutes a game
   filter(g >= 10, mp / g >= 5) |> 
-  # ADD COMMENT !!!!
+  # Bin each percentage into their respective quartiles, 0%-25% -> 1, and so on...
   mutate(
     ts_quant = quartile_rank(ts_percent),
     trb_quant = quartile_rank(trb_percent),
@@ -101,15 +100,15 @@ nba_graph_dat <- nba_dat |>
     ast_quant = quartile_rank(ast_percent),
     usg_quant = quartile_rank(usg_percent)
   ) |> 
-  # ADD COMMENT !!!!
+  # Only get the actual player and columns we made
   select(player, contains("_quant")) |> 
-  # ADD COMMENT !!!!
+  # Making it tidy!
   pivot_longer(
     cols = -player, 
     names_to = "variable", 
     values_to = "value"
     ) |> 
-  # ADD COMMENT !!!!
+  # Sort alphabetically by name
   arrange(player)
 ```
 
@@ -129,6 +128,61 @@ nba_graph_dat <- nba_dat |>
 ::: {.callout-tip icon=false}
 ## Solution
 
+```{r}
+#| fig-width: 8
+#| fig-height: 10
+#| out-width: 50%
+#| fig-align: "center"
+
+filter(nba_graph_dat, player == "Anthony Edwards") |>
+  ggplot(aes(variable, value)) +
+  geom_col(width = 1,
+           color = "black",
+           fill = "#E38893") +
+  geom_hline(yintercept = 1:4, linetype = "dotted") +
+  scale_x_discrete(
+    name = NULL,
+    limits = c(
+      "ts_quant",
+      "usg_quant",
+      "dbpm_quant",
+      "trb_quant",
+      "ast_quant"
+    ),
+    labels = NULL
+  ) +
+  scale_y_continuous(
+    name = NULL,
+    limits = c(NA, 5),
+    breaks = NULL,
+    labels = NULL
+  ) +
+  annotate(
+    "text",
+    x = 1:5,
+    y = 5,
+    label = c(
+      "TRUE\nSHOOTING",
+      "USAGE\nRATE",
+      "DEFENSIVE\nBPM",
+      "REBOUND\nRATE",
+      "ASSIST\nRATE"
+    ),
+    size = 5
+  ) +
+  annotate(
+    "text",
+    x = 3,
+    y = 1:4,
+    label = c("1st-25th", "25th-50th", "50th-75th", "75th-100th"),
+    vjust = -1,
+    size = 3
+  ) +
+  coord_polar() +
+  labs(title = "Anthony Edwards\n(2024)") +
+  theme(axis.text = element_blank())
+```
+
 :::
 
 ## Challenge
@@ -144,6 +198,62 @@ Challenge is optional for all students, but we recommend trying them out!
 Continue the work of trying to recreate the graphic from the article. Your final plot should look as follows:
 
 ::: {.callout-tip icon=false}
-## Solution
+
+```{r}
+#| fig-width: 8
+#| fig-height: 10
+#| out-width: 50%
+#| fig-align: "center"
+
+filter(nba_graph_dat, player == "Anthony Edwards") |>
+  ggplot(aes(variable, value)) +
+  geom_col(width = 1,
+           color = "black",
+           fill = "#E38893") +
+  geom_hline(yintercept = 1:4, linetype = "dotted") +
+  scale_x_discrete(
+    name = NULL,
+    limits = c(
+      "ts_quant",
+      "usg_quant",
+      "dbpm_quant",
+      "trb_quant",
+      "ast_quant"
+    ),
+    breaks = NULL,
+    labels = NULL
+  ) +
+  scale_y_continuous(
+    name = NULL,
+    limits = c(NA, 5),
+    breaks = NULL,
+    labels = NULL
+  ) +
+  annotate(
+    "text",
+    x = 1:5,
+    y = 5,
+    label = c(
+      "TRUE\nSHOOTING",
+      "USAGE\nRATE",
+      "DEFENSIVE\nBPM",
+      "REBOUND\nRATE",
+      "ASSIST\nRATE"
+    ),
+    size = 5
+  ) +
+  annotate(
+    "text",
+    x = 3,
+    y = 1:4,
+    label = c("1st-25th", "25th-50th", "50th-75th", "75th-100th"),
+    vjust = -1,
+    size = 3
+  ) +
+  coord_polar() +
+  labs(title = "Anthony Edwards\n(2024)") +
+  theme(axis.text = element_blank(),
+        plot.title = element_text(hjust = 0.5, size = 20))
+```
 
 :::
