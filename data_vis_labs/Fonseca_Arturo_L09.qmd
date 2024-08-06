@@ -33,10 +33,11 @@ We'll be using the `cdc.txt` and `NU_admission_data.csv` datasets.
 
 ```{r}
 #| label: load-pkgs-data
-#| eval: false
 
 # load package(s)
-
+library(tidyverse)
+library(patchwork)
+library(showtext)
 
 # read in the cdc dataset
 cdc <- read_delim(file = "data/cdc.txt", delim = "|") |>
@@ -49,7 +50,7 @@ cdc <- read_delim(file = "data/cdc.txt", delim = "|") |>
     )
 
 # read in NU admission data
-
+nu_data <- read_csv("data/NU_admission_data.csv")
 
 # set seed
 set.seed(2468)
@@ -68,7 +69,6 @@ There should be at least 8 plots for this task, `plot_01` is pictured below. Use
 ```{r}
 #| label: ex-1-base-plot 
 #| echo: true
-#| eval: false
 
 # plot
 plot_01 <- ggplot(
@@ -117,7 +117,20 @@ plot_01 <- ggplot(
 
 ::: {.callout-tip icon=false}
 
-## Solution
+```{r}
+#| fig-show: hold
+#| layout-ncol: 2
+
+plot_01
+plot_01 + theme_bw()
+plot_01 + theme_linedraw()
+plot_01 + theme_light()
+plot_01 + theme_dark()
+plot_01 + theme_minimal()
+plot_01 + theme_classic()
+plot_01 + theme_void()
+plot_01 + ggthemes::theme_solarized()
+```
 
 :::
 
@@ -127,7 +140,7 @@ plot_01 <- ggplot(
 
 ::: {.callout-tip icon=false}
 
-## Solution
+I like `theme_light()` because it doesn't do too much, but at the same times displays all necessary information. It is very easy on the eye and it's what a plot typically looks like.
 
 :::
 
@@ -137,7 +150,38 @@ Using `plot_01` from Exercise 1 and the `theme()` function, attempt to construct
 
 ::: {.callout-tip icon=false}
 
-## Solution
+```{r}
+plot_01 + theme(
+  plot.background = element_rect(
+    color = "green",
+    fill = "magenta",
+    linewidth = 2
+  ),
+  plot.title = element_text(color = "#933CE7", face = "bold"),
+  
+  panel.background = element_rect(fill = "yellow"),
+  panel.grid.major.x = element_line(color = "#E73F25", size = 2),
+  panel.grid.minor.x = element_blank(),
+  panel.grid.major.y = element_line(color = "#1431F1", size = 2),
+  panel.grid.minor.y = element_blank(),
+  
+  legend.background = element_rect(fill = "#FEFAD2"),
+  legend.title = element_text(color = "#537EAC", face = "bold"),
+  legend.text = element_text(color = "#537EAC", face = "bold"),
+  
+  axis.line = element_line(color = "#6C6C6C", size = 1),
+  axis.ticks.x = element_line(color = "#FEFB53", size = 2),
+  axis.ticks.y = element_line(color = "#2A6318", size = 2),
+  axis.title.x = element_text(color = "#EA4025", face = "bold"),
+  axis.title.y = element_text(color = "#1431F1", face = "bold"),
+  axis.text.x = element_text(
+    color = "#EA4025",
+    angle = 180
+  ),
+  axis.text.y = element_text(color = "#1431F1", angle = 180)
+)
+```
+She's beautiful, isn't she? 😍
 
 :::
 
@@ -160,8 +204,110 @@ I find this [blog post](https://cran.rstudio.com/web/packages/showtext/vignettes
 :::
 
 ::: {.callout-tip icon=false}
-
 ## Solution
+
+```{r}
+#| echo: false
+
+nu_tidy <- nu_data |>
+  filter(Year >= 2002, Year <= 2022) |>
+  select(!ends_with("Rate")) |>
+  pivot_longer(-Year, names_to = "Type", values_to = "Count")
+
+p1 <- ggplot(nu_tidy, aes(Year, Count, fill = Type)) +
+  geom_col(position = "identity", width = 0.6) +
+  scale_x_continuous(
+    name = "Entering Year",
+    breaks = scales::breaks_width(1),
+    expand = expansion(add = 0.25)
+  ) +
+  scale_y_continuous(labels = scales::label_comma(), expand = expansion(0)) +
+  scale_fill_manual(
+    name = NULL,
+    limits = c("Matriculants", "Admitted students", "Applications"),
+    values = c("#4E2A84", "#836EAA", "#B6ACD1")
+  ) +
+  geom_text(
+    aes(label = scales::comma(Count)),
+    vjust = 1,
+    nudge_y = -500,
+    color = "white",
+    size = 2
+  ) +
+  # labs(title = "Northwestern University", subtitle = "Undergraduate Admissions 2001 - 2021") +
+  theme_classic() +
+  theme(
+    legend.direction = "horizontal",
+    legend.position = c(0.5, 1),
+    legend.justification = c(0.5, 1),
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
+nu_tidy_perc <- nu_data |>
+  filter(Year >= 2002, Year <= 2022) |>
+  select(Year, ends_with("Rate")) |>
+  pivot_longer(-Year, names_to = "Type", values_to = "Count") |>
+  mutate(Count = Count / 100)
+
+p2 <- ggplot(nu_tidy_perc,
+             aes(
+               Year,
+               Count,
+               group = Type,
+               color = Type,
+               shape = Type
+             )) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(
+    name = "Entering Year",
+    breaks = scales::breaks_width(1),
+    expand = expansion(add = 0.25)
+  ) +
+  scale_y_continuous(name = "Rate", labels = scales::label_percent()) +
+  scale_color_manual(name = NULL, values = c("maroon", "skyblue")) +
+  guides(shape = "none") +
+  geom_text(
+    aes(label = scales::percent(round(Count, 2))),
+    vjust = 0,
+    nudge_y = 0.01,
+    color = "black",
+    size = 2
+  ) +
+  theme_classic() +
+  theme(
+    legend.direction = "horizontal",
+    legend.position = c(0.5, 1),
+    legend.justification = c(0.5, 1),
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+  )
+```
+
+```{r}
+font_add_google("Crimson Pro", "crimson")
+showtext_auto()
+
+(
+  p2 / p1 &
+    theme(
+      text = element_text(family = "crimson"),
+      axis.title = element_text(face = "bold")
+    ) &
+    scale_color_manual(NULL, values = c("#2C124A", "#735F9C")) &
+    scale_fill_manual(NULL, values = c("#492C7F", "#806FA5", "#2C124A"))
+) +
+  plot_layout(axes = "collect") +
+  plot_annotation(
+  title = "Northwestern University",
+  subtitle = "Undergraduate Admissions 2001 - 2021",
+  theme = theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+)
+```
 
 :::
 
