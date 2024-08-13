@@ -4,7 +4,6 @@ subtitle: "Data Visualization (STAT 302)"
 author: "Arturo Fonseca"
 pagetitle: "Midterm Arturo Fonseca"
 date: today
-
 format:
   html:
     toc: true
@@ -13,13 +12,13 @@ format:
     link-external-newwindow: true
     code-fold: false
     fig-dpi: 300
-
 execute:
   warning: false
-
 from: markdown+emoji 
 reference-location: margin
 citation-location: margin
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Overview
@@ -64,13 +63,17 @@ We have also included the map data for Georgia (`ga_map.rda`) which was retrieve
 #| label: load-pkgs-data
 
 # load package(s)
+library(tidyverse)
+library(patchwork)
 
 # load steph curry data
+steph_curry <- read_delim("data/stephen_curry_shotdata_2023_24.txt")
 
 # load ga election & map data
+ga_data <- read_csv("data/ga_election_data.csv")
 
 # load map data
-
+load("data/ga_map.rda")
 ```
 
 ## Exercise 1
@@ -93,7 +96,6 @@ Using the `stephen_curry_shotdata_2023_24.txt` dataset replicate, as close as po
 #| label: ex-1-plot-1
 #| fig-width: 6
 #| fig-height: 4
-#| eval: false
 
 # data prep
 steph_curry <- steph_curry |>
@@ -106,6 +108,26 @@ steph_curry <- steph_curry |>
     )
   ) |> 
   filter(shot_distance < 46)
+
+steph_curry |>
+  ggplot(aes(period, shot_distance)) +
+  geom_boxplot(color = "#1D428A", fill = "#FFC72C80", varwidth = TRUE) +
+  facet_wrap( ~ event_type) +
+  scale_y_continuous(labels = function(x) paste(x, "ft")) +
+  labs(
+    x = "Quarter/Period",
+    y = NULL,
+    title = "Stephen Curry",
+    subtitle = "2023-2024"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 14),
+    axis.title = element_text(face = "bold", size = 12),
+    panel.grid.major.x = element_blank(),
+    strip.text = element_text(face = "bold", size = 12)
+  )
 ```
 
 :::
@@ -125,7 +147,58 @@ steph_curry <- steph_curry |>
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR ANSWER
+```{r}
+#| label: ex-1-plot-2
+#| fig-width: 6
+#| fig-height: 4
+
+# Not sure where the 0.09 is coming from. It would be very helpful if we actually
+# knew what these numbers were instead of just throwing them in a list...
+
+ggplot(
+  steph_curry,
+  aes(
+    shot_distance,
+    color = event_type,
+    fill = event_type,
+    linetype = event_type
+  )
+) +
+  geom_density(show.legend = F, alpha = 0.25) +
+  annotate(
+    "text",
+    4.5,
+    0.035,
+    label = "Made Shots",
+    hjust = 0,
+    color = "#5D3A9B"
+  ) +
+  annotate(
+    "text",
+    27.5,
+    0.081,
+    label = "Missed Shots",
+    hjust = 0,
+    color = "#E66100"
+  ) +
+  scale_x_continuous(
+    NULL,
+    labels = function(x)
+      paste(x, "ft"),
+    expand = expansion(0)
+  ) +
+  scale_y_continuous(NULL, labels = NULL, expand = expansion(0)) +
+  scale_color_manual(values = c("#5D3A9B", "#E66100")) +
+  scale_fill_manual(values = c("#5D3A9B", "#E66100")) +
+  labs(title = "Steph Curry", subtitle = "Shot Densities (2023-2024)") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 14),
+    axis.text.x = element_text(size = 12),
+    panel.grid = element_blank(),
+  )
+```
 
 :::
 
@@ -177,7 +250,7 @@ Provide a summary of what the graphics above indicate about Stephen Curry's shot
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR ANSWER
+This plot tells us that missed shots usually have a higher shot distance than made shots. Also, there is more variability of shot length throughout the middle quarters of the game. Steph Curry has a high density of missed shots between 20 ft and 30 ft, but he also has a high density of made shots at that distance. Overall, Steph Curry is more likely to miss far shots than close shots.
 
 :::
 
@@ -217,7 +290,8 @@ While it is clear that early voting was the preferred option for Georgia voters,
 #| eval: false
 
 # data
-ga_graph <- ga_data |> 
+ga_graph <- ga_data |>
+  janitor::clean_names() |>
   mutate(
     prop_pre_eday = (absentee_by_mail_votes + advanced_voting_votes) / total_votes
   ) |> 
@@ -244,8 +318,9 @@ trump_map_data <- ga_map |>
 # trump plot
 
 # code for final plot
-biden_plot + 
-  trump_plot + 
+
+biden_plot +
+  trump_plot +
   plot_annotation(
     title = "Percentage of votes from early voting",
     caption = "Georgia: 2020 US Presidential Election Results",
@@ -266,7 +341,7 @@ Provide a summary of how the two maps relate to one another. That is, what insig
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR ANSWER
+They both tell us how much voters were early voters for a specific candidate. The left one tells us that Biden voters are majority early voters while Trump voters are more mixed.
 
 :::
 
@@ -279,7 +354,7 @@ Name and briefly describe the core concept/idea that `ggplot2` package uses to b
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR ANSWER
+The Grammar of Graphics. This tells us that there is a systematic way to build graphics, starting with the data and aesthetics and then being able to layer geoms.
 
 :::
 
@@ -290,7 +365,7 @@ Explain the difference between using `geom_bar()` or `geom_col()` to make a bar 
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR ANSWER
+`geom_bar()` actually calculates the summary statistic (count) in plot, while `geom_col()` assumes this count information is already present in a column from the data. Use `geom_bar()` when you don't have counts.
 
 :::
 
@@ -301,7 +376,7 @@ Explain aesthetic mappings and their purpose.
 ::: {.callout-tip icon=false}
 ## Solution
 
-YOUR ANSWER
+Aesthetic mappings are a way to transfer data points from numerical form to visual characteristics of the graphic.
 
 :::
 
@@ -310,8 +385,8 @@ YOUR ANSWER
 What 2 core things do scales provide/control in ggplot2?
 
 ::: {.callout-tip icon=false}
-## Solution
 
-YOUR ANSWER
+1. Map data to aesthetics
+2. Transform data and change how it's displayed
 
 :::
