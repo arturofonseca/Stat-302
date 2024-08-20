@@ -1,0 +1,66 @@
+---
+title: "Data Memo"
+subtitle: |
+  | Final Project 
+  | Data Visualization (STAT 302)
+author: "Arturo Fonseca"
+pagetitle: "Data Memo Arturo Fonseca"
+date: today
+
+format:
+  html:
+    toc: true
+    toc-location: left
+    embed-resources: true
+    link-external-newwindow: true
+    fig-dpi: 300
+
+execute:
+  warning: false
+
+from: markdown+emoji 
+reference-location: margin
+citation-location: margin
+---
+
+::: {.callout-important}
+## Memo format
+
+Like all other submissions for this course, we expect the memo to be neat and well organized.
+
+You should make this document your own. This is a template. To help with this we have added a date to the yaml above (good whenever writing memos). You should remove this block when making this document your own.
+
+:::
+
+## Instructions
+
+After selecting data for the final project write up a short memo that at minimum covers the following:
+
+### Data source
+
+Identify and describe your data source or sources --- citations would be appropriate. Citations will typically include links to the data source.
+
+### Why this data
+
+The reason for your choice of data. Is it interesting to you? Challenging? Is this part of a larger research project? State any questions of interest that might be motivating your choice of data. Include any other motivations or background that you believe to be relevant.
+
+In general, we are asking you to tell us what sorts of questions you are trying to answer or what story you are trying to convey. Maybe you are just exploring a topic that is interesting to you and you are prospecting for a story to tell and that is okay too.
+
+### Visualization plan
+
+Share your plan for visualizing the data. Are you going with a presentation and static graphics, presentation with a mix animated and static graphics, or will you attempt to build an app/dashboard? 
+
+This is just an initial plan and you don't have to stick to it.
+
+### Initial data issues
+
+Have you been able to download the data and read it into R? If not, where are you getting stuck?
+
+Have you been able to examine the data a little? If yes, have you spotted any potential issues like difficult data wrangling or data quality issues such as a significant amount of missing data?
+
+### Misc
+
+Students are encourage to add any other information that they think would be useful to communicate about their data and their plan.
+
+If are seeking permission to work with a partner or partners then you should indicate it at the top of this memo (add a new section). Should include how you plan to work together or why working together makes sense for the project.
+

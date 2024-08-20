@@ -1,0 +1,63 @@
+---
+title: "Spongebob"
+subtitle: "Your mom"
+author: "Arturo Fonseca"
+date: today
+format: 
+  revealjs:
+    slide-number: true
+---
+
+## What is it?
+
+SpongeBob SquarePants is an American animated television series created by marine science educator and animator Stephen Hillenburg that first aired on Nickelodeon as a sneak peek after the 1999 Kids' Choice Awards on May 1, 1999, and officially premiered on July 17, 1999.
+
+![](https://upload.wikimedia.org/wikipedia/en/a/ae/SpongeBob_SquarePants_title_card.png)
+
+## ggplot2 of course
+
+Code for a graph, and the graph
+
+```{r}
+#| echo: true
+#| code-line-numbers: 3-5
+
+library(tidyverse)
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point(alpha = 1 / 3) +
+  geom_jitter() +
+  geom_smooth(method = "lm", se = F) +
+  theme_minimal()
+```
+
+## Tabs
+
+::: {.panel-tabset}
+
+### Random sentence A
+
+Some more stuff.^[A footnote]
+
+### Random sentence B
+
+:::: {.columns}
+
+::: {.column width="40%"}
+Today, we will look at...nothing
+:::
+
+::: {.column width="60%"}
+Tomorrow, we will look at...nothing
+:::
+
+::::
+
+:::
+
+::: aside
+Some additional commentary of more peripheral interest.
+:::
+
+::: footer
+A footer hello
+:::
