@@ -23,15 +23,6 @@ reference-location: margin
 citation-location: margin
 ---
 
-::: {.callout-important}
-## Memo format
-
-Like all other submissions for this course, we expect the memo to be neat and well organized.
-
-You should make this document your own. This is a template. To help with this we have added a date to the yaml above (good whenever writing memos). You should remove this block when making this document your own.
-
-:::
-
 ## Instructions
 
 After selecting data for the final project write up a short memo that at minimum covers the following:
