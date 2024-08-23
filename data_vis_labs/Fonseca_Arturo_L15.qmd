@@ -1,0 +1,131 @@
+---
+title: "L15 Tables 2 (Optional)"
+subtitle: "Data Visualization (STAT 302)" 
+author: "Arturo Fonseca"
+pagetitle: "L15 Arturo Fonseca (Optional)"
+date: today
+
+format:
+  html:
+    toc: true
+    toc-location: left
+    embed-resources: true
+    code-fold: show
+    link-external-newwindow: true
+    fig-dpi: 300
+
+execute:
+  warning: false
+
+from: markdown+emoji 
+html-table-processing: none
+---
+
+::: {.callout-important}
+
+This is an optional lab, not a bonus lab. Meaning there are no bonus points. 
+
+:::
+
+## Overview
+
+The goal of this lab is to explore interactive tables with the `DT` and `reactable` packages. Interactive tables are particularly useful if you are displaying tables in an app.
+
+Recently, the `gt` package added interactive elements with `opt_interactive()`. While there are no exercises for this, we would suggest trying to build the interactive tables with just `gt` options. It is unlikely you will be able to reproduce everything, but it would be good practice and it will help you decide when you need to switch from `gt` to a more advance interactive package.
+
+## Dataset
+
+We will be using the `pizzaplace` dataset included in the `gt` package and the `movie_ratings.rds` dataset, which should be placed into your `/data` subdirectory.
+
+```{r}
+#| label: laod-pkgs-data
+
+# load package(s)
+
+# load data
+```
+
+## Exercise 1
+
+Using the `pizza_sales` dataset derived from the `pizzaplace` dataset, recreate the following graphic as precisely as possible.
+
+```{r}
+#| label: ex-1
+#| eval: false
+
+# data wrangling
+pizza_sales <- pizzaplace |> 
+  group_by(name, type) |> 
+  summarize(
+    number_sold = n(),
+    profit = sum(price)
+    ) |> 
+  ungroup()
+```
+
+*Hints:*
+
+-   `DT` package
+-   set the page length to 8 entries
+-   format Number Sold so that it is rounded
+-   format Revenue as currency
+-   backgroundColor for `"chicken"` is `"lightblue"`
+-   example: <https://rstudio.github.io/DT/>
+
+::: {.callout-tip icon=false}
+
+## Solution
+
+YOUR SOLUTION HERE
+
+:::
+
+## Exercise 2
+
+Using the `movie_ratings` dataset, recreate the following graphic as precisely as possible. The `bar_chart` function created below is useful for making bar charts within cells.
+
+*Hints:*
+
+-   `reactable` package
+-   striped and filterable
+-   columns are changed within `column = list(...)`
+-   `cell = function(value) {bar_chart(...) }`
+-   `theme` argument equals `reactableTheme()`
+    -   backgroundColor = `"#e6e6e6"`,
+    -   borderColor = `"#fc5185"`,
+    -   stripedColor = `"#b3e6ff"`,
+    -   borderWidth = `"3px"`
+-   Helpful links:
+    -   <https://glin.github.io/reactable/>
+    -   <https://glin.github.io/reactable/articles/examples.html>
+
+
+::: {.callout-tip icon=false}
+
+## Solution
+
+```{r}
+#| label: ex-2
+#| eval: false
+
+# function to make bar chart
+bar_chart <- function(
+    label, 
+    width = "100%", 
+    height = "16px", 
+    fill = "#00bfc4", 
+    background = NULL) 
+  {
+  
+  bar = div(style = list(background = fill, 
+                          width = width, height = height))
+  chart = div(style = list(flexGrow = 1, 
+                            marginLeft = "8px", 
+                            background = background),
+               bar)
+  div(style = list(display = "flex", alignItems = "center"),
+      label, chart)
+}
+```
+
+:::

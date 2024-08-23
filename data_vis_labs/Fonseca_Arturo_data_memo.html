@@ -3097,26 +3097,92 @@ Data Visualization (STAT 302)</div><p></p>
 <section id="data-source" class="level3">
 <h3 class="anchored" data-anchor-id="data-source">Data source</h3>
 <p>Identify and describe your data source or sources — citations would be appropriate. Citations will typically include links to the data source.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This data source is from the CDC and includes over 250K individuals. This dataset specifically is from 2014 (for no specific reason other than it was the one referenced in a Kaggle dataset). It includes 23 columns, 1 of which is an indicator variable describing whether an individual has diabetes. <a href="https://www.cdc.gov/brfss/annual_data/annual_2014.html/" class="uri">https://www.cdc.gov/brfss/annual_data/annual_2014.html/</a></p>
+</div>
+</div>
 </section>
 <section id="why-this-data" class="level3">
 <h3 class="anchored" data-anchor-id="why-this-data">Why this data</h3>
 <p>The reason for your choice of data. Is it interesting to you? Challenging? Is this part of a larger research project? State any questions of interest that might be motivating your choice of data. Include any other motivations or background that you believe to be relevant.</p>
 <p>In general, we are asking you to tell us what sorts of questions you are trying to answer or what story you are trying to convey. Maybe you are just exploring a topic that is interesting to you and you are prospecting for a story to tell and that is okay too.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I wanted to use this dataset because I thought it could be very valuable to draw insights into people that have diabetes vs. people that don’t. For example, is there a relationship between smoking and having diabetes?</p>
+<p>I also chose it because it is very large (too large in fact), meaning there is a plenty to look at. This also means that this dataset is useful and descriptive, since it is used in a lot of research papers. It could also be a bit of a challenge to wrangle this data to get it to a size that is workable for <code>ggplot2</code>.</p>
+</div>
+</div>
 </section>
 <section id="visualization-plan" class="level3">
 <h3 class="anchored" data-anchor-id="visualization-plan">Visualization plan</h3>
 <p>Share your plan for visualizing the data. Are you going with a presentation and static graphics, presentation with a mix animated and static graphics, or will you attempt to build an app/dashboard?</p>
 <p>This is just an initial plan and you don’t have to stick to it.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I’m kind of motivated to do either a Shiny app or a Quarto presentation. I think a Shiny app would be best because viewers could pick what variables they want to view to see if there is a relationship with diabetes.</p>
+</div>
+</div>
 </section>
 <section id="initial-data-issues" class="level3">
 <h3 class="anchored" data-anchor-id="initial-data-issues">Initial data issues</h3>
 <p>Have you been able to download the data and read it into R? If not, where are you getting stuck?</p>
 <p>Have you been able to examine the data a little? If yes, have you spotted any potential issues like difficult data wrangling or data quality issues such as a significant amount of missing data?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Luckily, there is no missingness. My only issues (2) is that there is a clear class imbalance: there is an overwhelming number of people who don’t have diabetes as compared to people that do. This isn’t a machine learning task, but it would still be a challange to equally represent both groups. Another is issue is the size of the dataset. 250K+ observations is obviously way too much to plot, so I would need a systematic way to select data points to plot.</p>
+</div>
+</div>
 </section>
 <section id="misc" class="level3">
 <h3 class="anchored" data-anchor-id="misc">Misc</h3>
 <p>Students are encourage to add any other information that they think would be useful to communicate about their data and their plan.</p>
 <p>If are seeking permission to work with a partner or partners then you should indicate it at the top of this memo (add a new section). Should include how you plan to work together or why working together makes sense for the project.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I wonder if I should choose a more recent year or if it doesn’t really matter.</p>
+</div>
+</div>
 </section>
 </section>
 
