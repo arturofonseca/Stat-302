@@ -1,0 +1,206 @@
+---
+title: "Final Project SCRATH WORK ONLY"
+subtitle: "Data Visualization (STAT 302)"
+author: "Arturo Fonseca"
+pagetitle: "Final Project Arturo Fonseca"
+date: today
+
+format:
+  html:
+    toc: true
+    toc-location: left
+    embed-resources: true
+    code-fold: show
+    link-external-newwindow: true
+    fig-dpi: 300
+
+execute:
+  warning: false
+
+from: markdown+emoji 
+html-table-processing: none
+---
+
+## Introduction
+
+## Data Overview
+
+```{r}
+#| label: load-pkgs-data
+
+# load package(s)
+library(tidyverse)
+library(showtext)
+
+# fonts
+font_add_google("Inter", "inter")
+showtext_auto()
+
+# load data
+cdc <- read_csv("data/diabetes_binary_health_indicators_BRFSS2015.csv")
+
+# clean data
+cdc <- cdc |>
+  janitor::clean_names() |>
+  relocate(gen_hlth:phys_hlth, bmi, .after = last_col()) |>
+  mutate(
+    across(diabetes_binary:diff_walk, ~ factor(
+      .x, levels = c(0, 1), labels = c("No", "Yes")
+    )),
+    sex = factor(
+      sex,
+      levels = c(0, 1),
+      labels = c("Female", "Male")
+    ),
+    across(age:gen_hlth, as.factor)
+  )
+```
+
+## Graphic 1
+
+```{r}
+ggplot(cdc, aes(x = NA, fill = diabetes_binary)) +
+  geom_bar(color = "black") +
+  coord_polar("y") +
+  geom_text(aes(label = scales::label_comma()(after_stat(count))), 
+            stat = "count",
+            position = position_stack(vjust = 0.5), family = "inter") +
+  scale_fill_manual(values = c("lightgray", "deepskyblue")) +
+  labs(title = "Distribution of Target Variable", fill = "Has Diabetes?") +
+  theme_void() +
+  theme(text = element_text(family = "inter"))
+```
+
+```{r}
+ggplot(cdc, aes(bmi, fill = diabetes_binary)) +
+  geom_density(alpha = 0.8, bw = 1) +
+  geom_vline(data = cdc |>
+               group_by(diabetes_binary) |>
+               summarize(median_phys_hlth = median(bmi)),
+             aes(xintercept = median_phys_hlth, color = diabetes_binary),
+           linetype = "dashed", size = 1, show.legend = F) +
+  xlim(NA, 50) +
+  scale_color_manual(values = c("black", "blue")) +
+  scale_fill_manual(values = c("lightgray", "deepskyblue")) +
+  labs(title = "TODO", fill = "Has Diabetes?") +
+  theme_minimal() +
+  theme(
+    text = element_text(family = "inter"),
+    legend.position = "inside",
+    legend.position.inside = c(1, 0.5),
+    legend.justification.inside = c(1, 0.5),
+    axis.text.y = element_blank())
+
+ggplot(cdc, aes(bmi, diabetes_binary)) +
+  geom_boxplot(width = 0.5) +
+  xlim(NA, 50)
+```
+
+```{r}
+# TODO: SHINYYYYY ASF
+cdc |>
+  ggplot(aes(NA, fill = high_bp)) +
+  geom_bar(color = "black") +
+  coord_polar("y") +
+  facet_wrap(~ diabetes_binary, scales = "free") +
+  scale_fill_manual(values = c("lightgray", "deepskyblue")) +
+  geom_text(aes(label = scales::label_percent()(0.1)), 
+            stat = "count",
+            position = position_stack(vjust = 0.5), family = "inter") +
+  labs(title = "TODO") +
+  theme_void() +
+  theme(text = element_text(family = "inter"))
+
+cdc |>
+  ggplot(aes(NA, fill = high_chol)) +
+  geom_bar(color = "black") +
+  coord_polar("y") +
+  facet_wrap(~ diabetes_binary, scales = "free") +
+  scale_fill_manual(values = c("lightgray", "deepskyblue")) +
+  geom_text(aes(label = scales::label_percent()(0.1)), 
+            stat = "count",
+            position = position_stack(vjust = 0.5), family = "inter") +
+  labs(title = "TODO") +
+  theme_void() +
+  theme(text = element_text(family = "inter"))
+
+
+cdc |>
+  ggplot(aes(NA, fill = smoker)) +
+  geom_bar(color = "black") +
+  coord_polar("y") +
+  facet_wrap(~ diabetes_binary, scales = "free") +
+  scale_fill_manual(values = c("lightgray", "deepskyblue")) +
+  geom_text(aes(label = scales::label_percent()(0.1)), 
+            stat = "count",
+            position = position_stack(vjust = 0.5), family = "inter") +
+  labs(title = "TODO") +
+  theme_void() +
+  theme(text = element_text(family = "inter"))
+
+cdc |>
+  ggplot(aes(NA, fill = heart_diseaseor_attack)) +
+  geom_bar(color = "black") +
+  coord_polar("y") +
+  facet_wrap(~ diabetes_binary, scales = "free") +
+  scale_fill_manual(values = c("lightgray", "deepskyblue")) +
+  geom_text(aes(label = scales::label_percent()(0.1)), 
+            stat = "count",
+            position = position_stack(vjust = 0.5), family = "inter") +
+  labs(title = "TODO") +
+  theme_void() +
+  theme(text = element_text(family = "inter"))
+
+cdc |>
+  ggplot(aes(NA, fill = diff_walk)) +
+  geom_bar(color = "black") +
+  coord_polar("y") +
+  facet_wrap(~ diabetes_binary, scales = "free") +
+  scale_fill_manual(values = c("lightgray", "deepskyblue")) +
+  geom_text(aes(label = scales::label_percent()(0.1)), 
+            stat = "count",
+            position = position_stack(vjust = 0.5), family = "inter") +
+  labs(title = "TODO") +
+  theme_void() +
+  theme(text = element_text(family = "inter"))
+```
+
+## Graphic 2
+
+```{r}
+ggplot(cdc, aes(ment_hlth, fill = diabetes_binary)) +
+  geom_density(position = "fill", binwidth = 5, bw = 1.5) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "black") +
+  theme_minimal() +
+  scale_fill_manual(values = c("lightgray", "deepskyblue"))
+
+ggplot(cdc, aes(ment_hlth, fill = diabetes_binary, color = diabetes_binary)) +
+  geom_density(binwidth = 5, bw = 1.5, alpha = 0.5) +
+  # geom_hline(yintercept = 0.1, linetype = "dashed", color = "black") +
+  # ylim(NA, 0.05) +
+  theme_minimal() +
+  scale_fill_manual(values = c("lightgray", "deepskyblue"))
+
+ggplot(cdc, aes(phys_hlth, fill = phys_activity)) +
+  geom_density(position = "fill", binwidth = 5, bw = 1.5) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "black") +
+  theme_minimal() +
+  scale_fill_manual(values = c("lightgray", "deepskyblue"))
+
+ ggplot(cdc, aes(education, fill = diabetes_binary)) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(values = c("lightgray", "deepskyblue"))
+
+ggplot(cdc, aes(diabetes_binary, fill = phys_activity)) +
+  geom_bar(position = "fill")
+
+ggplot(cdc, aes(income, fill = diabetes_binary)) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(values = c("lightgray", "deepskyblue"))
+
+ggplot(cdc, aes(age, fill = diabetes_binary)) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(values = c("lightgray", "deepskyblue"))
+```
+
+## Graphic 3
